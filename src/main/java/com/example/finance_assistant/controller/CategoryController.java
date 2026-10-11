@@ -1,8 +1,11 @@
 package com.example.finance_assistant.controller;
 
-import com.example.finance_assistant.entity.Category;
-import com.example.finance_assistant.repository.CategoryRepository;
+import com.example.finance_assistant.dto.CategoryRequest;
+import com.example.finance_assistant.dto.CategoryResponse;
+import com.example.finance_assistant.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,15 +15,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryController {
 
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
     @PostMapping
-    public Category create(@RequestBody Category category) {
-        return categoryRepository.save(category);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoryResponse create(@Valid @RequestBody CategoryRequest request) {
+        return categoryService.create(request);
     }
 
     @GetMapping
-    public List<Category> getAll() {
-        return categoryRepository.findAll();
+    public List<CategoryResponse> getAll() {
+        return categoryService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public CategoryResponse getById(@PathVariable Long id) {
+        return categoryService.getById(id);
     }
 }
