@@ -15,6 +15,7 @@ public record TransactionResponse(
         String description,
         String paymentMode,
         LocalDate txnDate,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        String budgetAlert
 ) {
 }

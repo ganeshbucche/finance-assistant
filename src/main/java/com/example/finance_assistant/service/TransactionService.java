@@ -23,6 +23,7 @@ public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final CategoryRepository categoryRepository;
+    private final BudgetService budgetService;
 
     @Transactional
     public TransactionResponse create(User user, TransactionRequest request) {
@@ -32,7 +33,9 @@ public class TransactionService {
         transaction.setUser(user);
         apply(transaction, request, category);
 
-        return toResponse(transactionRepository.save(transaction));
+        Transaction saved = transactionRepository.save(transaction);
+        String alert = budgetService.checkAlert(user.getId(), saved);
+        return toResponse(saved, alert);
     }
 
     @Transactional(readOnly = true)
@@ -63,7 +66,10 @@ public class TransactionService {
         Transaction transaction = findOwned(user, id);
         Category category = findCategory(request);
         apply(transaction, request, category);
-        return toResponse(transactionRepository.save(transaction));
+
+        Transaction saved = transactionRepository.save(transaction);
+        String alert = budgetService.checkAlert(user.getId(), saved);
+        return toResponse(saved, alert);
     }
 
     @Transactional
@@ -99,6 +105,10 @@ public class TransactionService {
     }
 
     private TransactionResponse toResponse(Transaction t) {
+        return toResponse(t, null);
+    }
+
+    private TransactionResponse toResponse(Transaction t, String alert) {
         return new TransactionResponse(
                 t.getId(),
                 t.getAmount(),
@@ -108,6 +118,7 @@ public class TransactionService {
                 t.getDescription(),
                 t.getPaymentMode(),
                 t.getTxnDate(),
-                t.getCreatedAt());
+                t.getCreatedAt(),
+                alert);
     }
 }

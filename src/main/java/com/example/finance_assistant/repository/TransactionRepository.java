@@ -48,5 +48,18 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                                          @Param("type") TransactionType type,
                                          @Param("start") LocalDate start,
                                          @Param("end") LocalDate end);
-}
 
+    @Query("""
+            select sum(t.amount)
+            from Transaction t
+            where t.user.id = :userId
+              and t.category.id = :categoryId
+              and t.type = :type
+              and t.txnDate between :start and :end
+            """)
+    BigDecimal sumByCategory(@Param("userId") Long userId,
+                             @Param("categoryId") Long categoryId,
+                             @Param("type") TransactionType type,
+                             @Param("start") LocalDate start,
+                             @Param("end") LocalDate end);
+}
