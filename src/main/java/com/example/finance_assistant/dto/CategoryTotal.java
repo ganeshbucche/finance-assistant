@@ -1,0 +1,10 @@
+package com.example.finance_assistant.dto;
+
+import java.math.BigDecimal;
+
+public record CategoryTotal(
+        Long categoryId,
+        String categoryName,
+        BigDecimal total
+) {
+}
